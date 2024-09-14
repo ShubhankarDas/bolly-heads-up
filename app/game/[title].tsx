@@ -15,13 +15,18 @@ import { getDeckFromTitle, getRandomCard } from "@/utls";
 import { Decks } from "@/constants/Decks";
 import CountDownTimer from "@/components/CountDownTimer";
 
+import useSoundEffectPlayer from "@/hooks/useSoundEffectPlayer";
+
 const COUNTDOWN = 5;
 const GAME_DURATION = 3 * 60;
 
 const Game = () => {
   useLandscapeMode();
   const router = useRouter();
-  const { title } = useLocalSearchParams();
+  const { title, duration } = useLocalSearchParams<{
+    title: string;
+    duration?: string;
+  }>();
   const [gameStyle, setGameStyle] = useState(styles.gameState);
   const [pauseGame, setPauseGame] = useState(false);
   const [hasGameStarted, setHasGameStarted] = useState(false);
@@ -31,10 +36,12 @@ const Game = () => {
   );
   const [currentCard, setCurrentCard] = useState("");
   const { setGyroEnabled, gyroState } = useGyroSensor();
+  const { SOUNDS, playSound } = useSoundEffectPlayer();
 
   const showBufferScreen = (isCorrect: boolean) => {
     if (bufferTimer) return;
     Vibration.vibrate();
+    playSound(isCorrect ? SOUNDS.correct : SOUNDS.pass);
     setGameStyle(isCorrect ? styles.correctState : styles.passState);
     setPauseGame(true);
     setCurrentCard(isCorrect ? "Correct" : "Pass");
@@ -43,7 +50,7 @@ const Game = () => {
       setPauseGame(false);
       setBufferTimer(null);
       nextWord();
-    }, 2000);
+    }, 1000);
     setBufferTimer(t);
   };
 
@@ -97,7 +104,7 @@ const Game = () => {
           <>
             <CountDownTimer
               styles={styles.timerText}
-              startTimer={GAME_DURATION}
+              startTimer={duration ? parseInt(duration) : GAME_DURATION}
               onComplete={endGame}
             />
             <Text style={styles.cardText}>{currentCard}</Text>
@@ -116,6 +123,7 @@ const Game = () => {
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     height: "100%",
     display: "flex",
     alignItems: "center",

@@ -9,17 +9,20 @@ const useLandscapeMode = () => {
         ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
       );
     };
+
     const unsetLandscape = async () => {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.DEFAULT
       );
     };
+
     setLandscape();
 
     return () => {
       unsetLandscape();
     };
   }, []);
+
   return null;
 };
 

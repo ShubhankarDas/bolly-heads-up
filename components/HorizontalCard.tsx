@@ -18,6 +18,7 @@ const HorizontalCard = ({
 }: Props) => {
   return (
     <TouchableOpacity
+      activeOpacity={0.8}
       onPress={onPress}
       style={[styles.card, { backgroundColor: bgColor }]}
     >
